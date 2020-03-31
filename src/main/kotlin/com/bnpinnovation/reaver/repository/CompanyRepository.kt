@@ -4,6 +4,6 @@ import com.bnpinnovation.reaver.domain.Company
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface CompanyRepository: JpaRepository<Company, Long> {
-    fun existsByName(name: String): Boolean;
-
+    fun existsByName(name: String): Boolean
+    fun findByName(root: String): Company?
 }

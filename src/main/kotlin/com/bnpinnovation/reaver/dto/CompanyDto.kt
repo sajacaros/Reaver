@@ -9,8 +9,6 @@ interface CompanyDto{
     data class Details(
             val id:Long,
             val name: String,
-            val privateKeyLink: String,
-            val publicKeyLink: String,
             @JsonIgnore val created: LocalDateTime,
             @JsonIgnore val updated: LocalDateTime
     ) {

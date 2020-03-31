@@ -10,10 +10,12 @@ import javax.persistence.*
 data class Company(
         val name: String
 ) {
+
         @Id @GeneratedValue(strategy = GenerationType.AUTO)
         var id: Long? = null
-        var privateKey: String = "filepath"
-        var publicKey: String = "filepath"
+        var privateKeyPath: String = "filepath"
+        var publicKeyPath: String = "filepath"
+        var signedKeyPath: String? = null
 
         @OneToMany(fetch = FetchType.LAZY, mappedBy = "company")
         val _licenses = mutableListOf<License>()
@@ -29,4 +31,7 @@ data class Company(
 
         @UpdateTimestamp
         var updated: LocalDateTime = LocalDateTime.now()
+
+        val latestLicense: License?
+                get() = if(_licenses.isEmpty()) null else _licenses.last()
 }

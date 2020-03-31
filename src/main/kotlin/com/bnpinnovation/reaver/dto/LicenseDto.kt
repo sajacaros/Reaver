@@ -11,7 +11,6 @@ interface LicenseDto {
             val totalUserCount: Int,
             val concurrentTalkCount: Int,
             val recordable: Boolean,
-            val scarabLink: String,
             @JsonIgnore val created: LocalDateTime
     ) {
         val createdDate
