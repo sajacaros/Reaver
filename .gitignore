@@ -31,6 +31,6 @@ out/
 ### VS Code ###
 .vscode/
 
-key/*.key
+key/
 
 license/
