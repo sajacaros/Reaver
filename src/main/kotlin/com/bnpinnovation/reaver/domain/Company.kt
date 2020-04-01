@@ -1,5 +1,6 @@
 package com.bnpinnovation.reaver.domain
 
+import com.bnpinnovation.reaver.service.KeyPairStore
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.LocalDateTime
@@ -16,15 +17,8 @@ data class Company(
         var privateKeyPath: String = "filepath"
         var publicKeyPath: String = "filepath"
         var signedKeyPath: String? = null
-
         @OneToMany(fetch = FetchType.LAZY, mappedBy = "company")
         val _licenses = mutableListOf<License>()
-
-        val liceses get() = Collections.unmodifiableList(_licenses.toList())
-        fun addLicense(license: License) {
-                _licenses.add(license)
-                license.company = this
-        }
 
         @CreationTimestamp
         val created: LocalDateTime = LocalDateTime.now()
@@ -32,6 +26,17 @@ data class Company(
         @UpdateTimestamp
         var updated: LocalDateTime = LocalDateTime.now()
 
+        fun addLicense(license: License) {
+                _licenses.add(license)
+                license.company = this
+        }
+
+        val licenses: List<License>
+                get() = Collections.unmodifiableList(_licenses.toList())
+
         val latestLicense: License?
-                get() = if(_licenses.isEmpty()) null else _licenses.last()
+                get() = if(_licenses.isNotEmpty()) _licenses.last() else null
+
+        fun keyPairStore(keyBasePath:String): KeyPairStore
+                = KeyPairStore.load(keyBasePath, publicKeyPath, privateKeyPath)
 }

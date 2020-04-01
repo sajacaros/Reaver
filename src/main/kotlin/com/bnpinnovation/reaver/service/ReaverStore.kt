@@ -49,8 +49,8 @@ class KeyPairStore {
 
         fun generate(name: String, basePath: String): KeyPairStore {
             val keyPairStore = KeyPairStore()
-            keyPairStore.publicKeyPath = publicPath(name)
-            keyPairStore.privateKeyPath = privatePath(name)
+            keyPairStore.publicKeyPath = publicPath(name).toString()
+            keyPairStore.privateKeyPath = privatePath(name).toString()
             keyPairStore.writeKeyToFile(basePath, keyPairStore.publicKeyPath, keyPairStore.privateKeyPath)
 
             return keyPairStore
@@ -63,29 +63,23 @@ class KeyPairStore {
             return keyPairStore
         }
 
+        // {name}/{name}_{yyMMdd}_{rnd}.public
+        fun publicPath(name: String): Path
+                = Paths.get( name, FileStore.generationFilename(name, "public"))
+
+        // {name}/{name}_{yyMMdd}_{rnd}.private
+        fun privatePath(name: String): Path
+                = Paths.get(name, FileStore.generationFilename(name, "private"))
+
+        // {name}/{name}_{yyMMdd}_{rnd}.signed
+        fun signedKeyPath(name: String): Path
+                = Paths.get(name, FileStore.generationFilename(name, "signed"))
+
         private fun readFromFile(basePath: String, publicKeyPath:String, privateKeyPath: String): KeyPairStore {
             val publicKeyFullPath = Paths.get(basePath, publicKeyPath).toString()
             val privateKeyFullPath = Paths.get(basePath, privateKeyPath).toString()
             return KeyPairStore(invokePublicKey(publicKeyFullPath), invokePrivateKey(privateKeyFullPath))
         }
-
-        private val formatter = DateTimeFormatter.ofPattern("yyMMdd")
-
-        // {companyName}/yyMMdd_public_{rnd}.key
-        private fun publicPath(name: String)
-                = Paths.get( name, generationFilename("public")).toString()
-
-        // {companyName}/yyMMdd_private_{rnd}.key
-        private fun privatePath(name: String)
-                = Paths.get(name, generationFilename("private")).toString()
-
-        // {companyName}/yyMMdd_signed_{rnd}.key
-        fun signedKeyPath(name: String)
-                = Paths.get(name, generationFilename("signed")).toString()
-
-        // yyMMdd_{prefix}_{rnd}.key
-        private fun generationFilename(prefix: String)
-                = String.format("%s_%s_%d.key", LocalDateTime.now().format(formatter), prefix, (0..1000).random())
 
         private fun invokePublicKey(publicKeyPath: String)
                 = factory.generatePublic(X509EncodedKeySpec(Files.readAllBytes(Paths.get(publicKeyPath))))
@@ -98,15 +92,11 @@ class KeyPairStore {
 
 class ScarabStore {
     companion object {
-        private val formatter = DateTimeFormatter.ofPattern("yyMMdd")
+        fun scarabPath(name: String): Path
+                = Paths.get(name, FileStore.generationFilename(name, "scarab"))
 
-        fun scarabPath(name: String)
-                = String.format("%s_%s_%d.scarab", name, LocalDateTime.now().format(formatter), (0..1000).random())
-
-        fun save(basePath: String, scarabPath: String, scarab: ByteArray) {
-            FileStore.writeToFile(Paths.get(basePath, scarabPath).toString(), scarab)
-        }
-
+        fun save(basePath: String, scarabPath: String, scarab: ByteArray)
+                = FileStore.writeToFile(Paths.get(basePath, scarabPath).toString(), scarab)
     }
 }
 
@@ -127,5 +117,11 @@ class FileStore {
                 throw RuntimeException("failed to read file("+filePath.fileName+")!")
             }
         }
+
+        private val formatter = DateTimeFormatter.ofPattern("yyMMdd")
+        // {name}_{yyMMdd}_{rnd}.{postfix}
+        fun generationFilename(name: String, postfix: String)
+                = String.format("%s_%s_%d.%s", name, LocalDateTime.now().format(formatter), (0..1000).random(), postfix)
     }
 }
+
