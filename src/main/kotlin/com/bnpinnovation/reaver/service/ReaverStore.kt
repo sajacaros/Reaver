@@ -28,7 +28,7 @@ class KeyPairStore {
         _publicKey = pair.public
     }
 
-    constructor(publicKey: PublicKey, privateKey: PrivateKey) {
+    private constructor(publicKey: PublicKey, privateKey: PrivateKey) {
         _publicKey = publicKey
         _privateKey = privateKey
     }
