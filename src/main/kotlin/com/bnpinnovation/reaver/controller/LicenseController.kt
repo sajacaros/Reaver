@@ -60,7 +60,7 @@ class LicenseController(private val licenseService: LicenseService) {
                 .body(resource)
     }
 
-    @GetMapping(value = ["/{companyId}/license/lastest"])
+    @GetMapping(value = ["/{companyId}/license/latest"])
     fun scarabLatest(@PathVariable companyId: Long): ResponseEntity<Resource> {
         val resource = licenseService.scarabResourceLatest(companyId)
         return ResponseEntity.ok()
