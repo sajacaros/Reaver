@@ -1,7 +1,7 @@
+server:
+  servlet:
+    context-path: /reaver
 
 
 gamble.path: key
 scarab.path: license
-server:
-  servlet:
-    context-path: /reaver
